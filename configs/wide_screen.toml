@@ -1,0 +1,286 @@
+# Font of choice: "JetBrainsMonoNL Nerd Font Propo"
+# Nice fitting font families compatible with Mono terminals (like vscode) with a bias for cripsness and bigger glyphs:
+# - 0xProto | BitstromWera | BlexMono | FantasqueSans | GeistMono | Hack | Hurmit | FiraMono
+# - JetBrainsMono | MartianMono | NotoMono | OpenDyslexycM | OverpassM | iMWriting
+
+## Format shape:
+# Git -----------fill---------- CloudContexts
+# System/User/Dir/Time --fill-- LastCommand
+# >
+format = """\
+($git_branch$git_status$git_metrics$git_state)\
+$fill\
+$gcloud$aws$kubernetes$docker_context$golang$python
+\
+[](fg:bright-white)$container$os$username$sudo$directory[](fg:bright-white)$package$sudo$time\
+$fill\
+$character([](go-light-blue)$shell$cmd_duration[](go-light-blue)$shlvl $status)
+\
+[  ](bright-green)\
+"""
+
+continuation_prompt = "[](bright-black) "
+
+# use custom palette
+palette = "custom"
+# standard html colors by name from w3schools
+# https://www.w3schools.com/colors/colors_groups.asp
+[palettes.custom]
+  # Git bar colors
+    git-bg = "#0b7722"
+    status-bg = "#deae10"
+    metrics-bg = "#fb5807"
+    state-bg = "#ac0808"
+  # Status colors
+    success = "#51770c"
+    failure = "#a80101"
+    warning = "#f6ff00"
+    info = "#4ec3c7"
+  # Base colors
+    # black = "#000000"
+    bright-black = "#5D504A"
+    blue = "#0a54cb"
+    bright-blue = "#66d9ef"
+    cyan = "#2aa198"
+    bright-cyan = "#05ccbb"
+    green = "#3a8428"
+    bright-green = "#47fd19"
+    red = "#af3957"
+    bright-red = "#ff6188"
+    magenta = "#7735f1"
+    bright-magenta = "#cf87ff"
+    yellow = "#ed971f"
+    bright-yellow = "#f4bf75"
+    white = "#d1d1d1"
+    bright-white = "#ffffff"
+  # Extra colors
+    gray = "#75715E"
+    pink = "#a30d44"
+    bright-pink = "#f92672"
+  # Google colors
+    google-yellow = "#F4B400"
+    google-green = "#0F9D58"
+    google-blue = "#4285F4"
+    google-red = "#DB4437"
+  # Golang colors
+    go-light-blue = "#5dc9e2"
+    go-blue = "#00add8"
+    go-dark-blue = "#00758d"
+    go-aqua = "#00a29c"
+
+# =======
+# Git Bar
+# =======
+[git_branch]
+    symbol = " "
+    style = "bright-white bg:git-bg"
+    format = "[](git-bg)[$symbol$branch(:$remote_branch) ]($style)[](fg:git-bg)"
+
+[git_status]
+    ignore_submodules = true
+    style = "bright-white bg:status-bg"
+    format = """\
+    [](status-bg inverted)(\
+    [ status]($style)[ ](inverted status-bg)\
+    [$all_status$ahead_behind ](bright-white bg:status-bg)\
+    )[](fg:status-bg)"""
+    conflicted = "[=$count](red bg:status-bg)"
+    ahead = "[ ⇡$ahead_count](bg:status-bg)"
+    behind = "[ ⇣$behind_count](bg:status-bg)"
+    deleted = "[ ✘$count](bg:status-bg)"
+    diverged = "[ ⇕$count](bg:status-bg)"
+    modified = "[ !$count](bg:status-bg)"
+    renamed = "[ »$count](bg:status-bg)"
+    staged = "[ +$count](bg:status-bg)"
+    stashed = "[ stashed +$count](bg:status-bg)"
+    untracked = "[ ?$count](bg:status-bg)"
+    up_to_date = "[ ](bg:status-bg)"
+
+[git_metrics]
+    disabled = false
+    added_style = "bright-white bg:green"
+    deleted_style = "bright-white bg:red"
+    format = "[](metrics-bg inverted)([ lines](bright-white bg:metrics-bg)[](fg:metrics-bg bg:green)([ +$added ]($added_style))[](green bg:red)([ -$deleted ]($deleted_style))[](fg:red bg:metrics-bg))[](metrics-bg)"
+    ignore_submodules = true
+
+[git_state]
+    disabled = false
+    style = "github-fg bg:state-bg"
+    format = "[](status-bg inverted)[$state( $progress_current/$progress_total)]($style)[](status-bg)"
+
+# Disable the blank line at the start of the prompt (mainly for warp terminal)
+# add_newline = false
+
+# ==============
+# System Context
+# ==============
+[sudo]
+    symbol = "  "
+    format = "[as $symbol]($style)"
+    style = "bold yellow bg:bright-white"
+    disabled = false
+
+[container]
+    disabled = false
+    format = "[$symbol \\[$name\\] ]($style)"
+    style = "magenta bold bg:bright-white"
+    symbol = " "
+
+[character]
+    success_symbol = '[ ](bold bright-green) '
+    error_symbol = '[ ](bold bright-red) '
+
+[username]
+    show_always = true
+    style_user = "bright-white inverted"
+    style_root = "bright-white inverted"
+    format = '[$user]($style)'
+    disabled = false
+
+[os]
+    style = "bright-white inverted"
+    disabled = false
+    format = "[$symbol ]($style)"
+    [os.symbols]
+        Windows = " "
+        Macos = "󰀵 "
+
+[directory]
+    style = "bright-white inverted"
+    read_only_style = "fg:yellow bg:bright-white"
+    format = "[  > [$path](pink bg:bright-white) ]($style)[$read_only]($read_only_style)"
+    home_symbol = " "
+    read_only = "󰌾 "
+    truncation_length = 3
+    truncation_symbol = "…/"
+    # Here is how you can shorten some long paths by text replacement similar to mapped_locations in Oh My Posh:
+    [directory.substitutions]
+        "Documents" = "󰈙 "
+        "Downloads" = " "
+        "Music" = " "
+        "Pictures" = " "
+        # Keep in mind that the order matters. For example:
+        # "Important Documents" = " 󰈙 "
+        # will not be replaced, because "Documents" was already substituted before.
+        # So either put "Important Documents" before "Documents" or use the substituted version:
+        # "Important 󰈙 " = " 󰈙 "
+
+[cmd_duration]
+    disabled = false
+    show_milliseconds = true
+    style = "go-light-blue inverted"
+    format = "[took ~[$duration](red bold bg:go-light-blue) ]($style)"
+    min_time = 1 # ms
+[fill]
+    symbol = " "
+    style = "black"
+
+# ===============
+# System Contexts
+# ===============
+[gcloud]
+    symbol = "󱇶"
+    style = "google-blue italic bg:bright-white"
+    format = """[](fg:bright-white)\
+    [$symbol ](google-blue bg:bright-white)\
+    [G](bold google-red italic bg:bright-white)\
+    [C](bold google-blue italic bg:bright-white)\
+    [P](bold google-yellow italic bg:bright-white)\
+    [( on [$domain](bold $style))($region)($project)]($style)\
+    [](fg:bright-white)"""
+
+[aws]
+    disabled = false
+    expiration_symbol = "X"
+    format = "[]()[$symbol($profile )(\\($region\\) )(\\[$duration\\] )]($style)[]()"
+
+[docker_context]
+    detect_extensions = [ "Dockerfile", ".dockerignore" ]
+    detect_folders = [ "docker" ]
+    format = "[](blue)[$symbol](white bg:blue)[](blue bg:blue)[ $context ]($style)[](blue)"
+    only_with_files = true
+    style = "white italic bold bg:blue"
+    symbol = ""
+
+[kubernetes]
+    disabled = true
+    format = "[$symbol$context( \\($namespace\\))]($style) in "
+    style = "cyan bold"
+    symbol = "☸ "
+    [kubernetes.context_aliases]
+        context_alias = "context-name-too-long-to-display"
+    [kubernetes.user_aliases]
+        user_alias = "user-name-too-long-to-display"
+
+[memory_usage]
+    disabled = true
+    format = "via $symbol[$ram( | $swap)]($style) "
+    style = "white bold dimmed"
+    symbol = "🐏 "
+    threshold = 75
+
+[shell]
+    disabled = false
+    format = "[ $indicator ]($style)"
+    style = "go-light-blue inverted"
+
+[shlvl]
+    disabled = true
+    format = "[$symbol$shlvl]($style) "
+    style = "bold yellow"
+    symbol = "↕️  "
+    threshold = 2
+
+[status]
+    disabled = false
+    pipestatus = true
+    style = "bold red"
+    map_symbol = true
+    format = "($symbol code:[$status( $common_meaning$maybe_int)]($style)) (signal:[$signal_number $signal_name]($style))"
+    pipestatus_format = "[pipe trace:\\[](yellow)$pipestatus[\\]](yellow) [=>](yellow) ($symbol code:[$status( $common_meaning$maybe_int)]($style)) (signal:[$signal_number $signal_name]($style))"
+    pipestatus_segment_format = "$symbol code:[$status ($common_meaning$signal_name$maybe_int )]($style)"
+    success_symbol = "[ ](bright-green)"
+    sigint_symbol = "[ ](bright-cyan)"
+    signal_symbol = "[⚡ ](bright-cyan)"
+    not_found_symbol = "[ ](bright-yellow)"
+    not_executable_symbol = "[ ](bright-red)"
+    symbol = "[ ](bright-red)"
+
+# [terraform]
+[time]
+    disabled = false
+    style = "bold bright-yellow"
+    time_format = "%R %v"
+    format = " at [ ](bright-blue)[$time]($style)"
+
+# =========
+# Languages
+# =========
+[golang]
+    disabled = false
+    symbol = "󰟓 " #       󰟓  
+    style = "white bold italic bg:go-dark-blue"
+    format = "[](go-dark-blue)[$symbol ($version )]($style)[](go-dark-blue)"
+
+[python]
+    disabled = false
+    style = "yellow bg:blue"
+    format = "[](blue)[${symbol}${pyenv_prefix}(${version} )(\\($virtualenv\\))]($style)[](blue)"
+    symbol = " "
+    version_format = "py${raw}"
+
+# Nerdfont supported icons (find everything at https://www.nerdfonts.com/cheat-sheet):
+#  * powerline_&_extra:                                        
+#  * font_awesome:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+#  * font_awesome_extensions:                                                                                                                                                                          
+#  * weather_icons:                                                                                                                                                                                                                                     摒 敖 晴 朗 望 杖 歹 殺 流 滛 滋 漢 瀞 煮 瞧
+#  * devicons:                                                                                                                                                                                                      
+#  * octicons:                                                                                                                                                                           
+#  * font_logos:                    
+#  * pomicons:            
+#  * iec_power: ⏻ ⏼ ⏽ ⏾ ⭘
+#  * material_design: 1 2 3 4 5 6 7 8 9 A B C D E F 0
+#  * seti_ui:                                                     
+
+# Nerdfont options mini-guide
+

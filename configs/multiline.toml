@@ -12,7 +12,7 @@ format = """\
 $fill\
 $gcloud$aws$kubernetes$docker_context$golang$python
 \
-[](fg:bright-white)$container$os$username$sudo$directory[](fg:bright-white)$package$sudo$time\
+[](fg:bright-white)$container$os$username$directory[](fg:bright-white)$package$sudo$time\
 $fill\
 $character([](go-light-blue)$shell$cmd_duration[](go-light-blue)$shlvl $status)
 \
@@ -39,7 +39,7 @@ palette = "custom"
     warning = "#f6ff00"
     info = "#4ec3c7"
   # Base colors
-    # black = "#000000"
+    black = "#000000"
     bright-black = "#5D504A"
     blue = "#0a54cb"
     bright-blue = "#66d9ef"
@@ -76,11 +76,11 @@ palette = "custom"
 [git_branch]
     symbol = ""
     style = "bold bright-white bg:branch-bg"
-    format = "[](fg:black bg:branch-bg)[ $symbol $branch(:$remote_branch)]($style)[](fg:branch-bg)"
+    format = "[](fg:branch-bg inverted)[ $symbol $branch(:$remote_branch)]($style)[](fg:branch-bg)"
 [git_status]
     ignore_submodules = true
     style = "bright-white bg:status-bg"
-    format = "[](black bg:status-bg)([ status]($style)[](status-bg bg:status-bg-plus)[$all_status$ahead_behind ](bright-white bg:status-bg-plus))[](fg:status-bg-plus)"
+    format = "[](status-bg inverted)([ status]($style)[](status-bg bg:status-bg-plus)[$all_status$ahead_behind ](bright-white bg:status-bg-plus))[](fg:status-bg-plus)"
     conflicted = "[=$count](red bg:status-bg-plus)"
     ahead = "[⇡$ahead_count](bright-green bg:status-bg-plus)"
     behind = "[⇣$behind_count](bright-yellow bg:status-bg-plus)"
@@ -96,12 +96,12 @@ palette = "custom"
     disabled = false
     added_style = "bright-white bg:green"
     deleted_style = "bright-white bg:red"
-    format = "[](fg:black bg:metrics-bg)([ lines](bright-white bg:metrics-bg)[](fg:metrics-bg bg:green)([ added +$added]($added_style))[](green bg:red)([ removed -$deleted]($deleted_style))[](fg:red bg:metrics-bg))[](metrics-bg bg:black)"
+    format = "[](metrics-bg inverted)([ lines](bright-white bg:metrics-bg)[](fg:metrics-bg bg:green)([ added +$added]($added_style))[](green bg:red)([ removed -$deleted]($deleted_style))[](fg:red bg:metrics-bg))[](metrics-bg)"
     ignore_submodules = true
 [git_state]
     disabled = false
     style = "github-fg bg:state-bg"
-    format = "[](fg:black bg:status-bg)[$state( $progress_current/$progress_total)]($style)[](fg:status-bg bg:black)"
+    format = "[](status-bg inverted)[$state( $progress_current/$progress_total)]($style)[](status-bg)"
 
 # Disable the blank line at the start of the prompt (mainly for warp terminal)
 # add_newline = false
@@ -110,9 +110,9 @@ palette = "custom"
 # System Context
 # ==============
 [sudo]
-    symbol = "  "
-    format = "[as $symbol]($style)"
-    style = "bold yellow bg:bright-white"
+    symbol = " "
+    format = "[ [sudo](red) $symbol]($style)"
+    style = "bold yellow"
     disabled = false
 [container]
     disabled = false
@@ -161,8 +161,8 @@ palette = "custom"
     format = "[took ~[$duration](red bold bg:go-light-blue) ]($style)"
     min_time = 1 # ms
 [fill]
-symbol = " "
-style = "bold black"
+    symbol = " "
+    style = "bold black"
 
 # ===============
 # System Contexts
