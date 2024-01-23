@@ -10,12 +10,9 @@
 format = """\
 ($status\n)\
 ($git_branch $git_status $git_metrics $git_state\n)\
-($container$os$username$directory$shell$shelvl$sudo)\
-$time$character$cmd_duration
-[  ](bright-green)\
-"""
+($container$os$username$directory$shell$shelvl$sudo)"""
 
-right_format = """$gcloud$aws$kubernetes$docker_context$golang$python$package"""
+right_format = """$time$character$cmd_duration$gcloud$aws$kubernetes$docker_context$golang$python$package"""
 add_newline = true
 continuation_prompt = "[](bright-black) "
 
