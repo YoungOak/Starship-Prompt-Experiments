@@ -8,17 +8,15 @@
 # System/User/Dir/Time --fill-- LastCommand
 # >
 format = """\
-([](fg:git-bg)[󰊤 ](bold bright-white bg:git-bg)[](fg:git-bg)$git_branch$git_status$git_metrics$git_state)\
-$fill\
-$gcloud$aws$kubernetes$docker_context$golang$python
-\
-[](fg:bright-white)$container$os$username$directory[](fg:bright-white)$package$sudo$time\
-$fill\
-$character([](go-light-blue)$shell$cmd_duration[](go-light-blue)$shlvl $status)
-\
+($status\n)\
+($git_branch $git_status $git_metrics $git_state\n)\
+($container$os$username$directory$shell$shelvl$sudo)\
+$time$character$cmd_duration
 [  ](bright-green)\
 """
 
+right_format = """$gcloud$aws$kubernetes$docker_context$golang$python$package"""
+add_newline = true
 continuation_prompt = "[](bright-black) "
 
 # use custom palette
@@ -26,11 +24,10 @@ palette = "custom"
 # standard html colors by name from w3schools
 # https://www.w3schools.com/colors/colors_groups.asp
 [palettes.custom]
+  # Warning, Uppercase dont work
   # Git bar colors
-    git-bg = "#571845"
-    branch-bg = "#8f032d"
-    status-bg = "#ae0c00"
-    status-bg-plus = "#760800"
+    git-bg = "#00f2ff"
+    
     metrics-bg = "#fb5807"
     state-bg = "#deae10"
   # Status colors
@@ -38,6 +35,16 @@ palette = "custom"
     failure = "#a80101"
     warning = "#f6ff00"
     info = "#4ec3c7"
+  # Gradient A
+    grad0 = "#12486B"
+    grad1 = "#419197"
+    grad2 = "#78D6C6"
+    grad3 = "#F5FCCD"
+  # Gradient A Git Highlights
+    local-branch = "#B6C4B6"
+    remote-branch = "#304D30"
+    status-bg = "#143f25"
+    
   # Base colors
     black = "#000000"
     bright-black = "#5D504A"
@@ -75,28 +82,29 @@ palette = "custom"
 # =======
 [git_branch]
     symbol = ""
-    style = "bold bright-white bg:branch-bg"
-    format = "[](fg:branch-bg inverted)[ $symbol $branch(:$remote_branch)]($style)[](fg:branch-bg)"
+    style = "bold bg:local-branch"
+    format = "[](local-branch)[$symbol $branch   ]($style)[](bg:local-branch remote-branch)[( 󰅟 $remote_branch )](bg:remote-branch)[](remote-branch)"
+    always_show_remote = true
 [git_status]
     ignore_submodules = true
     style = "bright-white bg:status-bg"
-    format = "[](status-bg inverted)([ status]($style)[](status-bg bg:status-bg-plus)[$all_status$ahead_behind ](bright-white bg:status-bg-plus))[](fg:status-bg-plus)"
-    conflicted = "[=$count](red bg:status-bg-plus)"
-    ahead = "[⇡$ahead_count](bright-green bg:status-bg-plus)"
-    behind = "[⇣$behind_count](bright-yellow bg:status-bg-plus)"
-    deleted = "[ ✘$count](bright-white bg:status-bg-plus)"
-    diverged = "[ ⇕$count](warning bg:status-bg-plus)"
-    modified = "[ !$count](bright-blue bg:status-bg-plus)"
-    renamed = "[ »$count](blue bg:status-bg-plus)"
-    staged = "[ +$count](yellow bg:status-bg-plus)"
-    stashed = "[ stashed +$count](bright-blue bg:status-bg-plus)"
-    untracked = "[ ?$count](gray bg:status-bg-plus)"
-    up_to_date = "[ ](bright-green bg:status-bg-plus)"
+    format = "([](status-bg)[$all_status$ahead_behind ]($style))[](fg:status-bg)"
+    conflicted = "[=$count](red bg:status-bg)"
+    ahead = "[⇡$ahead_count](bright-green bg:status-bg)"
+    behind = "[⇣$behind_count](bright-yellow bg:status-bg)"
+    deleted = "[ ✘$count](bright-white bg:status-bg)"
+    diverged = "[ ⇕$count](warning bg:status-bg)"
+    modified = "[ !$count](bright-blue bg:status-bg)"
+    renamed = "[ »$count](blue bg:status-bg)"
+    staged = "[ +$count](yellow bg:status-bg)"
+    stashed = "[ stashed +$count](bright-blue bg:status-bg)"
+    untracked = "[ ?$count](gray bg:status-bg)"
+    up_to_date = "[ ](bright-green bg:status-bg)"
 [git_metrics]
     disabled = false
     added_style = "bright-white bg:green"
     deleted_style = "bright-white bg:red"
-    format = "[](metrics-bg inverted)([ lines](bright-white bg:metrics-bg)[](fg:metrics-bg bg:green)([ added +$added]($added_style))[](green bg:red)([ removed -$deleted]($deleted_style))[](fg:red bg:metrics-bg))[](metrics-bg)"
+    format = "([](green)([+$added]($added_style))[](bg:green red)([-$deleted]($deleted_style))[](red))"
     ignore_submodules = true
 [git_state]
     disabled = false
@@ -122,23 +130,27 @@ palette = "custom"
 [character]
     success_symbol = '[ ](bold bright-green) '
     error_symbol = '[ ](bold bright-red) '
-[username]
-    show_always = true
-    style_user = "fg:black bg:bright-white"
-    style_root = "fg:black bold bg:bright-white"
-    format = '[$user]($style)'
-    disabled = false
+
+# Main Bar
 [os]
-    style = "fg:black bg:bright-white"
+    style = "bg:grad0"
     disabled = false
-    format = "[$symbol ]($style)"
+    format = "[](grad0)[$symbol]($style)[](grad0 bg:grad1)"
     [os.symbols]
         Windows = " "
         Macos = "󰀵 "
+
+[username]
+    show_always = true
+    style_user = "white bg:grad1"
+    style_root = "red-bright bold bg:grad2"
+    format = '[ $user ]($style)[](grad1 bg:grad2)'
+    disabled = false
+
 [directory]
-    style = "fg:black bg:bright-white"
-    read_only_style = "fg:yellow bg:bright-white"
-    format = "[  > [$path](pink bg:bright-white) ]($style)[$read_only]($read_only_style)"
+    style = "fg:black bg:grad2"
+    format = "[   [$path](black bg:grad2) ]($style)[$read_only]($read_only_style)[](grad2 bg:grad3)"
+    read_only_style = "fg:yellow bg:grad3"
     home_symbol = " "
     read_only = "󰌾 "
     truncation_length = 3
@@ -149,17 +161,25 @@ palette = "custom"
         "Downloads" = " "
         "Music" = " "
         "Pictures" = " "
+        "GitHub" = " "
         # Keep in mind that the order matters. For example:
         # "Important Documents" = " 󰈙 "
         # will not be replaced, because "Documents" was already substituted before.
         # So either put "Important Documents" before "Documents" or use the substituted version:
         # "Important 󰈙 " = " 󰈙 "
+
+[shell]
+    disabled = false
+    format = "[ $indicator ]($style)[](grad3)"
+    style = "black bg:grad3"
+
 [cmd_duration]
     disabled = false
     show_milliseconds = true
-    style = "black bold bg:go-light-blue"
-    format = "[took ~[$duration](red bold bg:go-light-blue) ]($style)"
+    style = "blue"
+    format = "[took ~[$duration](red) ](yellow)"
     min_time = 1 # ms
+
 [fill]
     symbol = " "
     style = "bold black"
@@ -208,10 +228,7 @@ palette = "custom"
     symbol = "🐏 "
     threshold = 75
 
-[shell]
-    disabled = false
-    format = "[ $indicator ]($style)"
-    style = "black bg:go-light-blue"
+
 [shlvl]
     disabled = true
     format = "[$symbol$shlvl]($style) "
@@ -227,7 +244,7 @@ palette = "custom"
     format = "($symbol code:[$status( $common_meaning$maybe_int)]($style)) (signal:[$signal_number $signal_name]($style))"
     pipestatus_format = "[pipe trace:\\[](yellow)$pipestatus[\\]](yellow) [=>](yellow) ($symbol code:[$status( $common_meaning$maybe_int)]($style)) (signal:[$signal_number $signal_name]($style))"
     pipestatus_segment_format = "$symbol code:[$status ($common_meaning$signal_name$maybe_int )]($style)"
-    success_symbol = "[](bright-green)"
+    # success_symbol = "[](bright-green)" # Keep commented to prevent output on success (0)
     sigint_symbol = "[](bright-cyan)"
     signal_symbol = "[⚡](bright-cyan)"
     not_found_symbol = "[](bright-yellow)"
